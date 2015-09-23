@@ -6049,7 +6049,10 @@ function Invoke-UserHunter {
         $Domain,
 
         [Switch]
-        $ShowAll
+        $ShowAll,
+        
+        [Switch]
+        $Recurse
     )
 
     begin {
@@ -6130,7 +6133,11 @@ function Invoke-UserHunter {
         else{
             # otherwise default to the group name to query for target users
             Write-Verbose "[*] Querying domain group '$GroupName' for target users..."
-            $temp = Get-NetGroup -GroupName $GroupName -Domain $targetDomain | % {$_.MemberName}
+            if ($Recurse) {
+                $temp = Get-NetGroup -GroupName $GroupName -Recurse -Domain $targetDomain | % {$_.MemberName}
+            } else {
+                $temp = Get-NetGroup -GroupName $GroupName -Domain $targetDomain | % {$_.MemberName}
+            }
             # lower case all of the found usernames
             $TargetUsers = $temp | ForEach-Object {$_.ToLower() }
         }
@@ -6379,7 +6386,10 @@ function Invoke-UserHunterThreaded {
         $MaxThreads = 20,
 
         [Switch]
-        $ShowAll
+        $ShowAll,
+        
+        [Switch]
+        $Recurse
     )
 
     begin {
@@ -6453,7 +6463,11 @@ function Invoke-UserHunterThreaded {
         else{
             # otherwise default to the group name to query for target users
             Write-Verbose "[*] Querying domain group '$GroupName' for target users..."
-            $temp = Get-NetGroup -GroupName $GroupName -Domain $targetDomain | % {$_.MemberName}
+            if ($Recurse) {
+                $temp = Get-NetGroup -GroupName $GroupName -Recurse -Domain $targetDomain | % {$_.MemberName}
+            } else {
+                $temp = Get-NetGroup -GroupName $GroupName -Domain $targetDomain | % {$_.MemberName}
+            }
             # lower case all of the found usernames
             $TargetUsers = $temp | ForEach-Object {$_.ToLower() }
         }
